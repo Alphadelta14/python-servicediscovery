@@ -1,0 +1,85 @@
+
+
+__all__ = ['ServiceClient']
+
+
+class ServiceClientError(Exception):
+    """Raised for errors in ServiceClient"""
+    pass
+
+
+class ServiceClient(object):
+    """Service Client capable of discovering a registry and making
+    itself known.
+
+    Attributes
+    ----------
+    service_type : str
+        Prefix/namespace of the service
+    service_id : int or None
+        Unique identifier of the service when registered
+    methods : list of Method
+        Methods to discover the registry
+    registry : Registry or None
+        Registry when registered
+    """
+    def __init__(self, service_type):
+        self.service_type = service_type
+        self.service_id = None
+        self.methods = []
+        self.registry = None
+
+    def get_name(self):
+        """Get the name of the registered service
+
+        Returns
+        -------
+        service_name : str
+
+        Raises
+        ------
+        ServiceClientError
+            If the service is not yet registered with the registry
+        """
+        if self.service_id is None:
+            raise ServiceClientError('This service is not registered')
+        return '{type}:{id}'.format(type=self.service_type,
+                                    id=self.service_id)
+
+    def on_register(self, registry):
+        """Callback when register() is called with block=False
+
+        This will be called in a new thread.
+
+        Parameters
+        ----------
+        registry : Registry
+        """
+        pass
+
+    def register(self, block=True):
+        """Find the control node based on the provided methods and registers
+        with it.
+
+        Parameters
+        ----------
+        block : Boolean, optional
+            If block is True (default), this will block until the control
+            node is found. Otherwise, this will call self.on_register()
+            in a new thread
+
+        Returns
+        -------
+        registry : Registry or None
+            The discovered registry or None if not blocking
+        """
+        pass
+
+    def add_method(self, method):
+        """Adds a Method to be checked for discovering the registry
+
+        Parameters
+        ----------
+        method : Method
+        """
+        self.methods.append(method)
