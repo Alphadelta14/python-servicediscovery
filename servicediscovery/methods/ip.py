@@ -1,4 +1,11 @@
 
+"""
+    IPMethods
+    Use specified IPs to determine where the registry node is
+
+    Author: Alpha <alpha@projectpokemon.org>
+"""
+
 from servicediscovery.methods import Method
 
 

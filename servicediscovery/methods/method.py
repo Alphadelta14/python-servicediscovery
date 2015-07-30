@@ -53,7 +53,7 @@ class Method(object):
         return registry
 
     @staticmethod
-    def check_ip(ip_address, port):
+    def check_ip(ip_address, port, family=socket.AF_INET):
         """Checks that an IP:port is open
 
         Parameters
@@ -67,8 +67,7 @@ class Method(object):
         -------
         ip_address, port : (str, int) or (None, None)
         """
-        # TODO: IPv6 family
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock = socket.socket(family, socket.SOCK_STREAM)
         sock.settimeout(1.0)  # TODO: configurable
         try:
             sock.connect((ip_address, port))
