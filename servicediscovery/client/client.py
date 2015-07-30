@@ -1,6 +1,12 @@
 
+"""
+    ServiceClient
+    A client representation of itself and other registered services
 
-__all__ = ['ServiceClient']
+    Author: Alpha <alpha@projectpokemon.org>
+"""
+
+__all__ = ['ServiceClient', 'RegisteredServiceClient']
 
 
 class ServiceClientError(Exception):
@@ -83,3 +89,22 @@ class ServiceClient(object):
         method : Method
         """
         self.methods.append(method)
+
+
+class RegisteredServiceClient(ServiceClient):
+    """A registered ServiceClient as returned by the ServiceRegistry
+    """
+    def __init__(self, service_type, service_id, registry):
+        ServiceClient.__init__(self, service_type)
+        self.service_id = service_id
+        self.registry = registry
+
+    def register(self, block=True):
+        """Registration is not allowed for RegisteredServiceClient
+
+        Raises
+        ------
+        ServiceClientError
+            This is not an allowed method
+        """
+        raise ServiceClientError('Cannot register a registered service')
