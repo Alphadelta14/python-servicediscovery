@@ -6,6 +6,8 @@
     Author: Alpha <alpha@projectpokemon.org>
 """
 
+import servicediscovery.client
+
 __all__ = ['ServiceRegistry']
 
 
