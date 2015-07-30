@@ -36,6 +36,7 @@ class ServiceClient(object):
         self.service_id = None
         self.methods = []
         self.registry = None
+        self.retry_all = 3
 
     def get_name(self):
         """Get the name of the registered service
@@ -81,7 +82,15 @@ class ServiceClient(object):
         registry : Registry or None
             The discovered registry or None if not blocking
         """
-        pass
+        if not block:
+            # TODO: Async?
+            raise NotImplementedError('Asynchronous mode not implemented')
+        for retry in range(self.retry_all):
+            for method in self.methods:
+                registry = method.register(self)
+                if registery is not None:
+                    return registery
+        raise ServiceClientError('Could not find a registry')
 
     def add_method(self, method):
         """Adds a Method to be checked for discovering the registry
