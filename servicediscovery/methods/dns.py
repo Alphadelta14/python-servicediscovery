@@ -24,12 +24,23 @@ class DNSMethod(Method):
         # TODO: dns servers
         self.port = port
 
-    def get_registry(self):
-        """Checks the addresses for a given hostname"""
+    def get_candidates(self):
+        """Does a DNS lookup and returns the potential get_candidates
+
+        Returns
+        -------
+        candidates : List of (ip_address, port, family)
+        """
+        candidates = []
         for (family, socktype, proto, canonname, sockaddr) in \
                 socket.getaddrinfo(self.hostname, self.port, 0, 0,
                                    socket.IPPROTO_TCP):
-            ip_address, port = sockaddr[:2]
+            candidates.append(sockaddr[:2]+(family,))
+        return candidates
+
+    def get_registry(self):
+        """Checks the addresses for a given hostname"""
+        for ip_address, port, family in self.get_candidates():
             found_address, found_port = self.check_ip(ip_address, port,
                                                       family=family)
             if found_address is not None:
