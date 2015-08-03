@@ -7,6 +7,7 @@
 """
 
 import socket
+import struct
 
 from servicediscovery.methods import Method
 
@@ -46,3 +47,31 @@ class DNSMethod(Method):
             if found_address is not None:
                 return self.found_registry(found_address, found_port)
         return None
+
+
+class MDNSMethod(DNSMethod):
+    """Uses multicast DNS to check local network for target
+
+    See Also
+    --------
+    DNSMethod
+    """
+    def get_candidates(self):
+        mdns_groups = [(socket.AF_INET, '224.0.0.251'),
+                       ]  # (socket.AF_INET6, 'FF02::FB')]
+        mdns_port = 5353
+
+        for family, mdns_group in mdns_groups:
+            sock = socket.socket(family, socket.SOCK_DGRAM,
+                                 socket.IPPROTO_UDP)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            sock.bind(('', mdns_port))
+            mdns_group_repr = socket.inet_pton(family, mdns_group)
+            # TODO: IPv6
+            ip_mreqn = struct.pack('4sll', mdns_group_repr,
+                                   socket.INADDR_ANY, 0)
+            sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP,
+                            ip_mreqn)
+
+        while True:
+            print(sock.recv(10240), )
